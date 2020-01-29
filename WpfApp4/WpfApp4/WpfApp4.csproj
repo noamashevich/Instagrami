@@ -61,6 +61,7 @@
     <Compile Include="SingInPage.xaml.cs">
       <DependentUpon>SingInPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SynchronousSocketClient.cs" />
     <Page Include="first.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

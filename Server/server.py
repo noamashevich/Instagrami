@@ -20,16 +20,30 @@ class Server():
 		self.clients.append(conn)
 
 	def handle_client(self, client):
-		logging.warning('Client sent: {}'.format(client.recv(4096)))
+		message = client.recv(4096)
+		logging.warning('Client sent: {}'.format(repr(message)))
+		if not message:
+			self.handle_client_disconnect(client)
+
+	def handle_client_disconnect(self, client):
+		logging.warning('Client {} disconnected!'.format(client))
+		self.clients.remove(client)		
 
 	def handle_sockets(self):
 		while True:
-			readable, _, _ = select.select(self.clients + [self.s], [], [])
+			readable, _, disconnected = select.select(self.clients + [self.s], [], self.clients)
+
+			readable = filter(lambda x: x not in disconnected, readable)
+
 			for sock in readable:
-				if sock == self.s:
+				if sock is self.s:
 					self.accept_client()
 				else:
 					self.handle_client(sock)
+
+			for sock in disconnected:
+				self.handle_client_disconnect(sock)
+
 
 def main():
 	server = Server(7000)

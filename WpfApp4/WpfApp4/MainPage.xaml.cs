@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,8 +34,14 @@ namespace WpfApp4
 
         private void LogInButton_Click(object sender, RoutedEventArgs e)
         {
+			// Establish the remote endpoint for the socket.  
+			// This example uses port 7000 on the local computer.  
+			// IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+			IPAddress ipAddress = IPAddress.Parse("127.0.0.1"); // ipHostInfo.AddressList[0];
+			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7000);
 
-        }
+			SynchronousSocketClient.StartClient(serverAddress);
+		}
 
         private void SingUpButton_Click(object sender, RoutedEventArgs e)
         {
