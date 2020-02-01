@@ -40,7 +40,9 @@ namespace WpfApp4
 			IPAddress ipAddress = IPAddress.Parse("127.0.0.1"); // ipHostInfo.AddressList[0];
 			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7000);
 
-			SynchronousSocketClient.StartClient(serverAddress);
+			SynchronousSocketClient client = new SynchronousSocketClient(serverAddress);
+
+			client.Send("WOW");
 		}
 
         private void SingUpButton_Click(object sender, RoutedEventArgs e)
