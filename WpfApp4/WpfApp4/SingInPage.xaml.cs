@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Net;
 
 namespace WpfApp4
 {
@@ -27,7 +28,15 @@ namespace WpfApp4
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+			string username = UserNameNewAccount.Text;
+			string password = PasswortNewAccount.Text;
 
-        }
+			IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7014);
+
+			SynchronousSocketClient client = new SynchronousSocketClient(serverAddress);
+
+			client.Send(username + ", " + password, MessageType.SignUp);
+		}
     }
 }

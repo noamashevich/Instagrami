@@ -40,9 +40,9 @@ namespace WpfApp4
 		 * 
 		 * @return bool Returns true if the message was sent successfuly, false otherwise.
 		 */
-		public bool Send(string message)
+		public bool Send(string message, MessageType messageType)
 		{
-			Header header = new Header((uint)message.Length, 0, MessageType.MainPage);
+			Header header = new Header((uint)message.Length, 0, messageType);
 
 			MemoryStream ms = new MemoryStream();
 

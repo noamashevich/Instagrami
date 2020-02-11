@@ -38,11 +38,13 @@ namespace WpfApp4
 			// This example uses port 7000 on the local computer.  
 			// IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
 			IPAddress ipAddress = IPAddress.Parse("127.0.0.1"); // ipHostInfo.AddressList[0];
-			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7000);
+			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7012);
 
 			SynchronousSocketClient client = new SynchronousSocketClient(serverAddress);
 
-			client.Send("WOW");
+			client.Send("WOW", MessageType.SignIn);
+
+			string message = client.Recieve();
 		}
 
         private void SingUpButton_Click(object sender, RoutedEventArgs e)
