@@ -32,11 +32,22 @@ namespace WpfApp4
 			string password = PasswortNewAccount.Text;
 
 			IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7014);
+			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7019);
 
 			SynchronousSocketClient client = new SynchronousSocketClient(serverAddress);
 
 			client.Send(username + ", " + password, MessageType.SignUp);
+
+			Tuple<Header, string> reply = client.Recieve();
+
+			Header header = reply.Item1;
+
+			if (header.type == MessageType.SignUpSuccess)
+				SignUpStatus.Content = "SignUp was successful";
+			else if (header.type == MessageType.SignUpExists)
+				SignUpStatus.Content = "SignUp failed - user already exists";
+			else
+				SignUpStatus.Content = "Got invalid message from server";
 		}
     }
 }

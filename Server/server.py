@@ -5,104 +5,143 @@ import select
 import logging
 import struct
 
+from logic import Logic
 from protocol import *
 
 class Server():
+	"""
+	This class is responsible for the network and protocol logic.
+	It is used to accept and handle clients and their requests.
+	"""
+
 	def __init__(self, port):
+		"""
+		The server's constructor
+
+		@param port The port the server will listen on
+		"""
 		self.s = socket.socket()
 		self.s.bind(("0.0.0.0", port))
 		self.s.listen(5)
 		self.clients = []
+		self.server_logic = Logic()
+
 
 	def run(self):
+		"""
+		Starts the server.
+		The server will listen for connections and handle them from now on.
+		This method blocks unless an unhandled exception rises.
+		"""
 		self.handle_sockets()
 
 	
 	def accept_client(self):
+		"""
+		Accepts a client to the server.
+		If a client isn't waiting to be accepted the method will block.
+		"""
 		conn, addr = self.s.accept()
-		logging.warning('Client connected')
+		logging.info(f'Client {addr[0]} connected')
 		self.clients.append(conn)
 
 
-	def client_send(self, client, message, message_type):
-		message_bytes = bytearray(message, encoding='ascii')
-
-		length = len(message_bytes)
-		user_id = 0
-		message_type = message_type
-
-		header = struct.pack(HEADER_FMT, length, user_id, message_type)
-
-		client.send(header + message_bytes)
+	def client_send(self, client, reply):
+		"""
+		Builds the header of the message based on the *message_type* and
+		sends the *message* with the header to the *client*.
+		
+		@param client The client we will send the message to
+		@param reply The reply to send to the client
+		"""
+		client.send(reply)
 
 
 	def client_recv(self, client):
-		header_bytes = bytearray(client.recv(HEADER_LENGTH))
+		"""
+		Recieves a message from the client.
 
-		if not header_bytes:
-			self.handle_client_disconnect(client)
+		@param client The client to recieve a message from
+
+		@return (bytearray, bytearray) Returns the tuple (header, message) on successful parsing
+									   and returns (None, None) on parsing / network error.
+		"""
+		try:
+			header_bytes = bytearray(client.recv(HEADER_LENGTH))
+
+			if not header_bytes:
+				return None, None
+
+			header = struct.unpack(HEADER_FMT, header_bytes)
+			message = client.recv(header[0])
+		except Exception as e:
+			logging.warning(f'Client message caused: {e}')
 			return None, None
-
-		header = struct.unpack(HEADER_FMT, header_bytes)
-
-		message = client.recv(header[0])
 
 		return header, message
 
 
 	def handle_client(self, client):
+		"""
+		Handles a client's request, which might send the client a response.
+
+		@param client The client to handle a request for.
+		"""
 		header, message = self.client_recv(client)
 
-		if message is None:
+		if message is None or header is None:
+			self.handle_client_disconnect(client)
 			return
 
-		logging.warning('Client sent: {}:{}'.format(repr(header), repr(message)))
+		logging.debug('Client sent: {}|{}'.format(repr(header), repr(message)))
 
-		self.client_send(client, "WOW from server", MessageType.MAIN_PAGE)
+		reply = self.server_logic.handle_client_message(header, message)
+
+		logging.info(f'reply: {reply}')
+
+		self.client_send(client, reply)
 
 
 	def handle_client_disconnect(self, client):
-		logging.warning('Client {} disconnected!'.format(client))
+		"""
+		Handles the disconnection of *client* - this includes removing it from the list
+		of clients and closing the socket.
+		"""
+		logging.info('Client {} disconnected!'.format(client))
 		self.clients.remove(client)
-
-
-	def remove_bad_clients(self):
-		for client in self.clients:
-			try:
-				_, _, _ = select.select([client], [], [], 0)
-			except:
-				self.clients.remove(client)
+		client.close()
 
 
 	def handle_sockets(self):
+		"""
+		Handles all of the sockets - that includes the server socket that recieves
+		new clients, and the clients themselves.
+
+		This is a blocking method and will not return unless there is an unhandeld exception.
+		"""
 		while True:
-			try:
-				readable, _, disconnected = select.select(self.clients + [self.s], [], self.clients)
+			readable, _, disconnected = select.select(self.clients + [self.s], [], self.clients)
 
-				logging.error(readable)
-				readable = filter(lambda x: x not in disconnected, readable)
-				logging.error(readable)
+			for sock in disconnected:
+				self.handle_client_disconnect(sock)
 
-				for sock in readable:
-					if sock is self.s:
-						self.accept_client()
-					else:
-						self.handle_client(sock)
+			for sock in readable:
+				if sock is self.s:
+					self.accept_client()
+				else:
+					self.handle_client(sock)
 
-				for sock in disconnected:
-					self.handle_client_disconnect(sock)
-			except ConnectionResetError as e:
-				self.remove_bad_clients()
-				
 
 def main():
+	logging.basicConfig(level=logging.INFO)
+
 	try:
-		server = Server(7014)
+		server = Server(7019)
 		server.run()
 	except Exception as e:
 		print(e)
 	finally:
-		input()
+		input('Server crashed\nPress any key to continue...')
 
 if __name__ == '__main__':
 	main()

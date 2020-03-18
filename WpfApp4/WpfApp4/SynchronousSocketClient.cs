@@ -15,7 +15,11 @@ namespace WpfApp4
 		SignUp,
 		ImageUpload,
 		ImageDownload,
-		MainPage
+		MainPage,
+		SignUpSuccess,
+		SignUpExists,
+		SignInSuccess,
+		SignInFail
 	}
 	public class SynchronousSocketClient
 	{
@@ -64,17 +68,23 @@ namespace WpfApp4
 		 * 
 		 * @return string The message recieved from the server
 		 */
-		public string Recieve()
+		public Tuple<Header, string> Recieve()
 		{
 			byte[] headerBytes = new byte[Header.HEADER_LENGTH];
 			int bytesRec = sender.Receive(headerBytes);
 
 			Header header = new Header(headerBytes);
 
-			byte[] msgBytes = new byte[header.length];
-			bytesRec = sender.Receive(msgBytes);
+			string messageStr = "";
 
-			return Encoding.ASCII.GetString(msgBytes, 0, bytesRec);
+			if (header.length > 0)
+			{
+				byte[] msgBytes = new byte[header.length];
+				bytesRec = sender.Receive(msgBytes);
+				messageStr = Encoding.ASCII.GetString(msgBytes, 0, bytesRec);
+			}
+
+			return Tuple.Create(header, messageStr);
 		}
 	}
 

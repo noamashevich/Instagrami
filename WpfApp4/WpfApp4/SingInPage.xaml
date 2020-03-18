@@ -15,6 +15,7 @@
             <Label Content="Create Password" Canvas.Left="286" Canvas.Top="167" Width="196" FontSize="24"/>
             <Label Content="Pick a password for your new account." Canvas.Left="277" Canvas.Top="209" Foreground="#FF787676"/>
             <Button Content="Add Me." Canvas.Left="345" Canvas.Top="333" Width="86" Height="23" Click="Button_Click" Background="#FFA1BFEC"/>
+            <Label x:Name="SignUpStatus" Content="" Canvas.Left="365" Canvas.Top="283"/>
         </Canvas>
 
     </Grid>
