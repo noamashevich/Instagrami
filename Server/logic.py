@@ -2,6 +2,8 @@ import logging
 from DB import ServerDB
 from protocol import MessageType, HEADER_FMT
 import struct
+import os
+from datetime import datetime
 
 class Logic(object):
 	def __init__(self):
@@ -19,6 +21,8 @@ class Logic(object):
 			return self.handle_sign_up(message)
 		elif msg_type == MessageType.SIGN_IN:
 			return self.handle_sign_in(message)
+		elif msg_type == MessageType.IMAGE_UPLOAD:
+			return self.handle_image_upload(message)
 
 
 	def handle_sign_up(self, message):
@@ -40,3 +44,68 @@ class Logic(object):
 				return self.build_header(0, MessageType.SIGN_IN_SUCCESS)
 		
 		return self.build_header(0, MessageType.SIGN_IN_FAIL)
+
+
+	def handle_image_upload(self, message):
+		"""
+		Handles an image upload message
+
+		@param message The message to handle
+
+		@note Image upload message content:
+			  [username_size: 10 bytes]
+			  [text_size: 10 bytes]
+			  [image_size: 10 bytes]
+			  [username: ~username_size~ bytes]
+			  [text: ~text_size~ bytes]
+			  [image: ~image_size~ bytes]
+
+		@return bytes The header of the message to return
+		"""
+		SIZE_FIELD_LEN = 10
+		USERNAME_SIZE_END = TXT_SIZE_START = SIZE_FIELD_LEN
+		TXT_SIZE_END = IMG_SIZE_START = 2 * SIZE_FIELD_LEN
+		IMG_SIZE_END = USERNAME_START = 3 * SIZE_FIELD_LEN
+
+		try:
+			username_size = int(message[:USERNAME_SIZE_END])
+			text_size = int(message[TXT_SIZE_START:TXT_SIZE_END])
+			image_size = int(message[IMG_SIZE_START:IMG_SIZE_END])
+		except:
+			return self.build_header(0, MessageType.INVAL_MSG_FMT)
+
+		username_end = text_start = USERNAME_START + username_size
+		username = message[USERNAME_START:username_end]
+
+		text_end = image_start = text_start + text_size
+		text = message[text_start:text_end]
+
+		image_end = image_start + image_size
+		image = message[image_start:image_end]
+
+		if len(username) != username_size or \
+		   len(text) != text_size or \
+		   len(image) != image_size:
+			return self.build_header(0, MessageType.INVAL_MSG_FMT)
+
+		date_time_now = datetime.now()
+		time = str(datetime.time(date_time_now))
+		date = str(datetime.date(date_time_now))
+
+		date_time_str = date + time
+
+		image_hash = sha224(image + text).hexdigest()
+
+		image_path = os.path.join(username, image_hash + date_time_str)
+		image_path = os.path.abspath(image_path)
+
+		if not os.path.exists(username):
+			os.mkdir(username)
+
+		with open(image_path, "wb") as image_file:
+			image_file.write(image)
+
+		if not self.server_db.add_image(username, text, image_path):
+			return self.build_header(0, MessageType.NO_SUCH_USER)
+		
+		return self.build_header(0, MessageType.IMG_UPLOAD_SUCCESS)

@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
@@ -64,11 +65,26 @@
     <Compile Include="first.xaml.cs">
       <DependentUpon>first.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImageUpload.xaml.cs">
+      <DependentUpon>ImageUpload.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="InstagramiImage.cs" />
     <Compile Include="SingInPage.xaml.cs">
       <DependentUpon>SingInPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="SynchronousSocketClient.cs" />
     <Page Include="first.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImageUpload.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -14,10 +14,17 @@ class ServerDB():
 							username TEXT PRIMARY KEY NOT NULL,
 							password_hash TEXT NOT NULL)'''
 
+	CREATE_IMAGES_TABLE = '''CREATE TABLE IF NOT EXISTS images (
+							 image_location TEXT PRIMARY KEY NOT NULL,
+							 image_text TEXT NOT NULL,
+							 username TEXT NOT NULL)'''
+
 	# Table manipulation
 	GET_USER_BY_USERNAME = '''SELECT * FROM users WHERE username="{}"'''
 
 	ADD_USER = '''INSERT INTO users VALUES ("{}", "{}")'''
+
+	ADD_IMAGE = '''INSERT INTO images VALUES ("{}", "{}", "{}")'''
 
 	def __init__(self):
 		"""
@@ -27,6 +34,7 @@ class ServerDB():
 		self.conn = sqlite3.connect(ServerDB.DB_NAME)
 
 		self.conn.execute(ServerDB.CREATE_USERS_TABLE)
+		self.conn.execute(ServerDB.CREATE_IMAGES_TABLE)
 
 
 	def get_user_by_username(self, username):
@@ -69,5 +77,16 @@ class ServerDB():
 
 		return True
 
+
+	def add_image(self, username, image_txt, image_path):
+		if not self.get_user_by_username(username):
+			return False
+
+		self.conn.execute(ServerDB.ADD_IMAGE.format(image_path, image_txt, username))
+
+		# Update the DB on disk
+		self.conn.commit()
+
+		return True
 
 

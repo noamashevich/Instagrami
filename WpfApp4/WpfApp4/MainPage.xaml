@@ -6,38 +6,39 @@
              xmlns:local="clr-namespace:WpfApp4"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <Grid>
-    <Canvas x:Name="canvasMain" HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800" Background="#FFFAFAFA" >
-      <Image Height="100" Canvas.Left="246" Canvas.Top="56" Width="275"
+    <Grid>
+        <Canvas x:Name="canvasMain" HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800" Background="#FFFAFAFA" >
+            <Image Height="100" Canvas.Left="246" Canvas.Top="56" Width="275"
                    Source="/pic/insta.png" RenderTransformOrigin="0.5,0.5">
-        <Image.RenderTransform>
-          <TransformGroup>
-            <ScaleTransform/>
-            <SkewTransform AngleY="-0.207"/>
-            <RotateTransform/>
-            <TranslateTransform Y="-0.496"/>
-          </TransformGroup>
-        </Image.RenderTransform>
-      </Image>
-      <TextBox x:Name="UserName" Height="31" Canvas.Left="211" TextWrapping="Wrap" Canvas.Top="172" Width="343"  Background="#FFF1EFEF" FontSize="20"/>
-      <Button x:Name="LogInButton" Content="Log in" Canvas.Left="211" Canvas.Top="276" Width="343" Background="#FFA1BFEC" Click="LogInButton_Click" Height="23" FontWeight="Bold"/>
-      <Label Content="Don't have an account? " Canvas.Left="271" Canvas.Top="356" Width="134"/>
-      <Button x:Name="SingUpButton" Content="Sing Up." Canvas.Left="405" Canvas.Top="359" Width="52" Background="#FFF9F8F8" BorderBrush="#FFF9F8F8" Foreground="#FF6382BA" Click="SingUpButton_Click"/>
-      <PasswordBox x:Name="Password" Canvas.Left="211" Canvas.Top="221" Width="343" Height="33" Background="#FFF1EFEF" FontSize="20"/>
-      <GridSplitter Height="770" Canvas.Left="395" Canvas.Top="-41" Width="2" RenderTransformOrigin="0.5,0.5" Background="#FFD1CCCC">
-        <GridSplitter.RenderTransform>
-          <TransformGroup>
-            <ScaleTransform/>
-            <SkewTransform/>
-            <RotateTransform Angle="-89.509"/>
-            <TranslateTransform/>
-          </TransformGroup>
-        </GridSplitter.RenderTransform>
-      </GridSplitter>
-      <TextBlock Canvas.Left="348" TextWrapping="Wrap" Text="     Or" Canvas.Top="335" Background="#FFFAFAFA" Width="44"/>
-      <Label Content="Username:" Canvas.Left="118" Canvas.Top="172" Width="103" FontSize="16"/>
-      <Label Content="Password:" Canvas.Left="118" Canvas.Top="220" Width="93" FontSize="16"/>
-    </Canvas>
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform AngleY="-0.207"/>
+                        <RotateTransform/>
+                        <TranslateTransform Y="-0.496"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <TextBox x:Name="UserName" Height="31" Canvas.Left="211" TextWrapping="Wrap" Canvas.Top="172" Width="343"  Background="#FFF1EFEF" FontSize="20"/>
+            <Button x:Name="LogInButton" Content="Log in" Canvas.Left="211" Canvas.Top="276" Width="343" Background="#FFA1BFEC" Click="LogInButton_Click" Height="23" FontWeight="Bold"/>
+            <Label Content="Don't have an account? " Canvas.Left="271" Canvas.Top="356" Width="134"/>
+            <Button x:Name="SingUpButton" Content="Sing Up." Canvas.Left="405" Canvas.Top="359" Width="52" Background="#FFF9F8F8" BorderBrush="#FFF9F8F8" Foreground="#FF6382BA" Click="SingUpButton_Click"/>
+            <PasswordBox x:Name="Password" Canvas.Left="211" Canvas.Top="221" Width="343" Height="33" Background="#FFF1EFEF" FontSize="20"/>
+            <GridSplitter Height="770" Canvas.Left="395" Canvas.Top="-41" Width="2" RenderTransformOrigin="0.5,0.5" Background="#FFD1CCCC">
+                <GridSplitter.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-89.509"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </GridSplitter.RenderTransform>
+            </GridSplitter>
+            <TextBlock Canvas.Left="348" TextWrapping="Wrap" Text="     Or" Canvas.Top="335" Background="#FFFAFAFA" Width="44"/>
+            <Label Content="Username:" Canvas.Left="118" Canvas.Top="172" Width="103" FontSize="16"/>
+            <Label Content="Password:" Canvas.Left="118" Canvas.Top="220" Width="93" FontSize="16"/>
+            <Button x:Name="HomePageButton" Content="Home Page" Canvas.Left="688" Canvas.Top="260" Width="75" Click="HomePageButton_Click"/>
+        </Canvas>
 
-  </Grid>
+    </Grid>
 </UserControl>

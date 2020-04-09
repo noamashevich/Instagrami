@@ -24,8 +24,9 @@ namespace WpfApp4
 
 
         public event RoutedEventHandler goToSigTUp;
+		public event RoutedEventHandler goToHomePage;
 
-        public MainPage()
+		public MainPage()
         {
             InitializeComponent();
         }
@@ -54,5 +55,10 @@ namespace WpfApp4
                 goToSigTUp(this, new RoutedEventArgs());
             }
         }
-    }
+
+		private void HomePageButton_Click(object sender, RoutedEventArgs e)
+		{
+			goToHomePage(this, new RoutedEventArgs());
+		}
+	}
 }
