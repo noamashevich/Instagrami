@@ -71,6 +71,16 @@ namespace WpfApp4
 			}
 
 			string imageDesc = imageDescription.Text;
+
+			Client client = Client.GetClient();
+
+			string result = client.ImageUpload(imageDesc, imageContent);
+
+			uploadButton.IsEnabled = false;
+			imageDescription.Text = "";
+			ImageViewer.Source = null;
+
+			resultLabel.Content = result;
 		}
 	}
 }

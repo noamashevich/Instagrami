@@ -139,7 +139,7 @@ def main():
 		server = Server(7019)
 		server.run()
 	except Exception as e:
-		print(e)
+		logging.exception(e)
 	finally:
 		input('Server crashed\nPress any key to continue...')
 

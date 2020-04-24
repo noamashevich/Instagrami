@@ -19,7 +19,11 @@ namespace WpfApp4
 		SignUpSuccess,
 		SignUpExists,
 		SignInSuccess,
-		SignInFail
+		SignInFail,
+		InvalMsgFmt,
+		NoSuchUser,
+		ImgUploadSuccess,
+		ImgUploadFail
 	}
 	public class SynchronousSocketClient
 	{
@@ -44,7 +48,7 @@ namespace WpfApp4
 		 * 
 		 * @return bool Returns true if the message was sent successfuly, false otherwise.
 		 */
-		public bool Send(string message, MessageType messageType)
+		public bool Send(byte[] message, MessageType messageType)
 		{
 			Header header = new Header((uint)message.Length, 0, messageType);
 
@@ -52,15 +56,28 @@ namespace WpfApp4
 
 			byte[] headerBytes = header.Serialize();
 			ms.Write(headerBytes, 0, headerBytes.Length);
-
-			// Encode the data string into a byte array.  
-			byte[] msg = Encoding.ASCII.GetBytes(message);
-			ms.Write(msg, 0, msg.Length);
+			
+			ms.Write(message, 0, message.Length);
 
 			// Send the data through the socket.  
 			int bytesSent = this.sender.Send(ms.ToArray());
 
 			return (bytesSent == ms.Length);
+		}
+
+		/**
+		 * The method sends a message to the server
+		 * 
+		 * @param message The message to send
+		 * 
+		 * @return bool Returns true if the message was sent successfuly, false otherwise.
+		 */
+		public bool Send(string message, MessageType messageType)
+		{
+			// Encode the data string into a byte array.  
+			byte[] msgBytes = Encoding.ASCII.GetBytes(message);
+
+			return this.Send(msgBytes, messageType);
 		}
 
 		/**

@@ -35,17 +35,9 @@ namespace WpfApp4
 
         private void LogInButton_Click(object sender, RoutedEventArgs e)
         {
-			// Establish the remote endpoint for the socket.  
-			// This example uses port 7000 on the local computer.  
-			// IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-			IPAddress ipAddress = IPAddress.Parse("127.0.0.1"); // ipHostInfo.AddressList[0];
-			IPEndPoint serverAddress = new IPEndPoint(ipAddress, 7019);
+			Client client = Client.GetClient();
 
-			SynchronousSocketClient client = new SynchronousSocketClient(serverAddress);
-
-			// client.Send("WOW", MessageType.SignIn);
-
-			// string message = client.Recieve();
+			SignInStateLabel.Content = client.SignIn(UserName.Text, Password.Password);
 		}
 
         private void SingUpButton_Click(object sender, RoutedEventArgs e)

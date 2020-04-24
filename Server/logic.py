@@ -4,6 +4,7 @@ from protocol import MessageType, HEADER_FMT
 import struct
 import os
 from datetime import datetime
+from hashlib import sha224
 
 class Logic(object):
 	def __init__(self):
@@ -71,7 +72,8 @@ class Logic(object):
 			username_size = int(message[:USERNAME_SIZE_END])
 			text_size = int(message[TXT_SIZE_START:TXT_SIZE_END])
 			image_size = int(message[IMG_SIZE_START:IMG_SIZE_END])
-		except:
+		except Execption as e:
+			logging.exception(e)
 			return self.build_header(0, MessageType.INVAL_MSG_FMT)
 
 		username_end = text_start = USERNAME_START + username_size
@@ -86,6 +88,10 @@ class Logic(object):
 		if len(username) != username_size or \
 		   len(text) != text_size or \
 		   len(image) != image_size:
+			logging.error('The sizes don\'t match')
+			logging.info(f'username: {username}, {len(username)} : {username_size}')
+			logging.info(f'text: {text}, {len(text)} : {text_size}')
+			logging.info(f'image: {len(image)} : {image_size}')
 			return self.build_header(0, MessageType.INVAL_MSG_FMT)
 
 		date_time_now = datetime.now()
@@ -93,10 +99,11 @@ class Logic(object):
 		date = str(datetime.date(date_time_now))
 
 		date_time_str = date + time
+		date_time_str = date_time_str.replace('-', '').replace(':', '').replace('.', '')
 
 		image_hash = sha224(image + text).hexdigest()
 
-		image_path = os.path.join(username, image_hash + date_time_str)
+		image_path = os.path.join(username.decode('ascii'), image_hash + date_time_str)
 		image_path = os.path.abspath(image_path)
 
 		if not os.path.exists(username):
@@ -106,6 +113,7 @@ class Logic(object):
 			image_file.write(image)
 
 		if not self.server_db.add_image(username, text, image_path):
+			logging.error(f'Failed to upload image for user {username}')
 			return self.build_header(0, MessageType.NO_SUCH_USER)
 		
 		return self.build_header(0, MessageType.IMG_UPLOAD_SUCCESS)

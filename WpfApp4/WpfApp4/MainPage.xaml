@@ -38,6 +38,7 @@
             <Label Content="Username:" Canvas.Left="118" Canvas.Top="172" Width="103" FontSize="16"/>
             <Label Content="Password:" Canvas.Left="118" Canvas.Top="220" Width="93" FontSize="16"/>
             <Button x:Name="HomePageButton" Content="Home Page" Canvas.Left="688" Canvas.Top="260" Width="75" Click="HomePageButton_Click"/>
+            <Label x:Name="SignInStateLabel" Content="" Canvas.Left="354" Canvas.Top="398"/>
         </Canvas>
 
     </Grid>

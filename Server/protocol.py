@@ -16,4 +16,5 @@ class MessageType(IntEnum):
 	SIGN_IN_FAIL       = 8
 	INVAL_MSG_FMT      = 9
 	NO_SUCH_USER       = 10
-	IMG_UPLOAD_SUCCESS = 11
+	IMG_UPLOAD_SUCCESS = 11	
+	IMG_UPLOAD_FAIL    = 12

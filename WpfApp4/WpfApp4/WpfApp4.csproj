@@ -62,6 +62,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client.cs" />
     <Compile Include="first.xaml.cs">
       <DependentUpon>first.xaml</DependentUpon>
     </Compile>

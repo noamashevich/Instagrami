@@ -80,12 +80,14 @@ class ServerDB():
 
 	def add_image(self, username, image_txt, image_path):
 		if not self.get_user_by_username(username):
+			logging.info(f'Non existent user {username} tried to add photo with text {image_text}')
 			return False
 
 		self.conn.execute(ServerDB.ADD_IMAGE.format(image_path, image_txt, username))
 
 		# Update the DB on disk
 		self.conn.commit()
+		logging.info(f'User {username} added photo with text {image_text}')
 
 		return True
 
