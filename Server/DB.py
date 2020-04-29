@@ -20,9 +20,14 @@ class ServerDB():
 							 username TEXT NOT NULL)'''
 
 	# Table manipulation
-	GET_USER_BY_USERNAME = '''SELECT * FROM users WHERE username="{}"'''
+	GET_ALL_USERS = '''SELECT * FROM users'''
+	GET_USER_BY_USERNAME = GET_ALL_USERS + ''' WHERE username="{}"'''	
+	GET_ALL_USERS_EXCEPT = GET_ALL_USERS + ''' WHERE username!="{}"'''
 
 	ADD_USER = '''INSERT INTO users VALUES ("{}", "{}")'''
+
+	GET_ALL_IMAGES = '''SELECT * FROM images ORDER BY image_location'''
+	GET_ALL_IMAGES_EXCEPT = '''SELECT * FROM images WHERE username!="{}" ORDER BY image_location'''
 
 	ADD_IMAGE = '''INSERT INTO images VALUES ("{}", "{}", "{}")'''
 
@@ -47,8 +52,16 @@ class ServerDB():
 					 if the user exists, or an empty list if the user doesn't exist.
 		"""
 		res = self.conn.execute(ServerDB.GET_USER_BY_USERNAME.format(username)).fetchall()
-		logging.info(res)
+		logging.debug(res)
 		return res
+
+
+	def get_all_users(self):
+		return self.conn.execute(ServerDB.GET_ALL_USERS).fetchall()
+
+
+	def get_all_users_except(self, username):
+		return self.conn.execute(ServerDB.GET_ALL_USERS_EXCEPT.format(username)).fetchall()
 
 
 	def add_user(self, username, password):
@@ -78,17 +91,28 @@ class ServerDB():
 		return True
 
 
+	def get_all_images(self):
+		return self.conn.execute(ServerDB.GET_ALL_IMAGES).fetchall()
+
+
+	def get_all_images_except(self, user_to_ignore):
+		return self.conn.execute(ServerDB.GET_ALL_IMAGES_EXCEPT.format(user_to_ignore)).fetchall()
+
+
 	def add_image(self, username, image_txt, image_path):
 		if not self.get_user_by_username(username):
-			logging.info(f'Non existent user {username} tried to add photo with text {image_text}')
+			logging.info(f'Non existent user {username} tried to add photo with text {image_txt}')
 			return False
 
 		self.conn.execute(ServerDB.ADD_IMAGE.format(image_path, image_txt, username))
 
 		# Update the DB on disk
 		self.conn.commit()
-		logging.info(f'User {username} added photo with text {image_text}')
+		logging.info(f'User {username} added photo with text {image_txt}')
 
 		return True
 
+	def get_images(self, user_to_ignore, start, amount):
+		images = self.get_all_images_except(user_to_ignore)
 
+		return images[start:start+amount]

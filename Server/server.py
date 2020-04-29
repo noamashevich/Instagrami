@@ -129,7 +129,10 @@ class Server():
 				if sock is self.s:
 					self.accept_client()
 				else:
-					self.handle_client(sock)
+					try:
+						self.handle_client(sock)
+					except:
+						self.handle_client_disconnect(sock)
 
 
 def main():

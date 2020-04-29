@@ -6,9 +6,16 @@ import os
 from datetime import datetime
 from hashlib import sha224
 
+
+
 class Logic(object):
+	IMAGES_DIR = 'images'
+
 	def __init__(self):
 		self.server_db = ServerDB()
+
+		if not os.path.exists(Logic.IMAGES_DIR):
+			os.mkdir(Logic.IMAGES_DIR)
 
 
 	def build_header(self, length, type):
@@ -24,6 +31,8 @@ class Logic(object):
 			return self.handle_sign_in(message)
 		elif msg_type == MessageType.IMAGE_UPLOAD:
 			return self.handle_image_upload(message)
+		elif msg_type == MessageType.REQUEST_MAIN_PAGE:
+			return self.handle_homepage_request(message)
 
 
 	def handle_sign_up(self, message):
@@ -89,9 +98,9 @@ class Logic(object):
 		   len(text) != text_size or \
 		   len(image) != image_size:
 			logging.error('The sizes don\'t match')
-			logging.info(f'username: {username}, {len(username)} : {username_size}')
-			logging.info(f'text: {text}, {len(text)} : {text_size}')
-			logging.info(f'image: {len(image)} : {image_size}')
+			logging.debug(f'username: {username}, {len(username)} : {username_size}')
+			logging.debug(f'text: {text}, {len(text)} : {text_size}')
+			logging.debug(f'image: {len(image)} : {image_size}')
 			return self.build_header(0, MessageType.INVAL_MSG_FMT)
 
 		date_time_now = datetime.now()
@@ -103,11 +112,11 @@ class Logic(object):
 
 		image_hash = sha224(image + text).hexdigest()
 
-		image_path = os.path.join(username.decode('ascii'), image_hash + date_time_str)
+		image_path = os.path.join(Logic.IMAGES_DIR, username.decode('ascii'), image_hash + date_time_str)
 		image_path = os.path.abspath(image_path)
 
-		if not os.path.exists(username):
-			os.mkdir(username)
+		if not os.path.exists(os.path.dirname(image_path)):
+			os.mkdir(os.path.dirname(image_path))
 
 		with open(image_path, "wb") as image_file:
 			image_file.write(image)
@@ -117,3 +126,25 @@ class Logic(object):
 			return self.build_header(0, MessageType.NO_SUCH_USER)
 		
 		return self.build_header(0, MessageType.IMG_UPLOAD_SUCCESS)
+
+
+	def handle_homepage_request(self, message):
+		user_to_ignore, start, amount = message.split(bytearray(', ', encoding='ascii'))
+			
+		images = self.server_db.get_images(user_to_ignore, int(start), int(amount))
+		response = self.build_header(0, MessageType.RESPONSE_MAIN_PAGE)
+
+		for image in images:
+			img_resp = image[2]
+
+			with open(image[0], 'rb') as img_file:
+				img_resp += img_file.read()
+
+			img_resp += image[1]
+
+			response += str(len(image[2])).encode('ascii').rjust(10)
+			response += str(len(img_resp) - len(image[2]) - len(image[1])).encode('ascii').rjust(10)
+			response += str(len(image[1])).encode('ascii').rjust(10)
+			response += img_response
+
+		return response

@@ -15,8 +15,8 @@ namespace WpfApp4
 		private string username = "";
 
 		public string Username
-		{ 
-			get { return  this.username; }
+		{
+			get { return this.username; }
 		}
 
 		/**
@@ -99,9 +99,9 @@ namespace WpfApp4
 			byte[] descriptionBytes = ASCIIEncoding.ASCII.GetBytes(description);
 
 			// Get all of the fields' sizes and pad them to a length of 10 with zeros.
-			string usernameSize    = usernameBytes.Length.ToString().PadLeft(10, '0');
+			string usernameSize = usernameBytes.Length.ToString().PadLeft(10, '0');
 			string descriptionSize = descriptionBytes.Length.ToString().PadLeft(10, '0');
-			string imgContentSize  = imageContent.Length.ToString().PadLeft(10, '0');
+			string imgContentSize = imageContent.Length.ToString().PadLeft(10, '0');
 
 			// Convert all of the sizes to a bytearray
 			byte[] sizesBytes = ASCIIEncoding.ASCII.GetBytes(usernameSize + descriptionSize + imgContentSize);
@@ -120,11 +120,21 @@ namespace WpfApp4
 			if (header.type == MessageType.ImgUploadSuccess)
 				return "Image uploaded successfully";
 			else if (header.type == MessageType.ImgUploadFail ||
-					 header.type == MessageType.NoSuchUser    ||
+					 header.type == MessageType.NoSuchUser ||
 					 header.type == MessageType.InvalMsgFmt)
 				return "Image upload failed!";
 			else
 				return "Got invalid message from server";
+		}
+
+
+		public string RequestHomePage(int start, int amount)
+		{
+			string request = this.username + ", " + start.ToString() + ", " + amount.ToString();
+
+			clientSocket.Send(request, MessageType.RequestMainPage);
+
+			return "";
 		}
 	}
 }

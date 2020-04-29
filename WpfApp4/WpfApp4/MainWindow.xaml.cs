@@ -53,6 +53,9 @@ namespace WpfApp4
 			this.canvas1.Children.Remove(mainPage);
 			this.canvas1.Children.Add(homePage);
 
+			Client client = Client.GetClient();
+			client.RequestHomePage(0, 10);
+
 			this.homePage.ImagesList.ItemsSource = new InstagramiImage[]
 			{
 				new InstagramiImage{Title="Image1", ImageData=new BitmapImage(new Uri("C:\\Users\\user\\Pictures\\regex.PNG"))},
