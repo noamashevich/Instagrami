@@ -33,8 +33,6 @@ namespace WpfApp4
 		 */
 		private void chooseImageButton_Click(object sender, RoutedEventArgs e)
 		{
-			string imageContent;
-
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.InitialDirectory = "c:\\";
 			openFileDialog.Filter = "Image files (*.jpg)|*.jpg|(*.png)|*.png|All Files (*.*)|*.*";

@@ -24,7 +24,8 @@ namespace WpfApp4
 		InvalMsgFmt,
 		NoSuchUser,
 		ImgUploadSuccess,
-		ImgUploadFail
+		ImgUploadFail,
+		ImgLike
 	}
 	public class SynchronousSocketClient
 	{
@@ -81,6 +82,24 @@ namespace WpfApp4
 			return this.Send(msgBytes, messageType);
 		}
 
+		public Tuple<Header, byte[]> RecieveBytes()
+		{
+			byte[] headerBytes = new byte[Header.HEADER_LENGTH];
+			int bytesRec = sender.Receive(headerBytes);
+
+			Header header = new Header(headerBytes);
+
+			byte[] msgBytes = null;
+
+			if (header.length > 0)
+			{
+				msgBytes = new byte[header.length];
+				bytesRec = sender.Receive(msgBytes);
+			}
+
+			return Tuple.Create(header, msgBytes);
+		}
+
 		/**
 		 * The method recieves a message from the server
 		 * 
@@ -88,21 +107,16 @@ namespace WpfApp4
 		 */
 		public Tuple<Header, string> Recieve()
 		{
-			byte[] headerBytes = new byte[Header.HEADER_LENGTH];
-			int bytesRec = sender.Receive(headerBytes);
-
-			Header header = new Header(headerBytes);
-
 			string messageStr = "";
 
-			if (header.length > 0)
+			Tuple<Header, byte[]> message = this.RecieveBytes();
+
+			if (message.Item1.length > 0)
 			{
-				byte[] msgBytes = new byte[header.length];
-				bytesRec = sender.Receive(msgBytes);
-				messageStr = Encoding.ASCII.GetString(msgBytes, 0, bytesRec);
+				messageStr = Encoding.ASCII.GetString(message.Item2, 0, (int)message.Item1.length);
 			}
 
-			return Tuple.Create(header, messageStr);
+			return Tuple.Create(message.Item1, messageStr);
 		}
 	}
 

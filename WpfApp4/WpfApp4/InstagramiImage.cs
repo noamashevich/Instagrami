@@ -7,8 +7,14 @@ using System.Windows.Media.Imaging;
 
 namespace WpfApp4
 {
-	class InstagramiImage
+	public class InstagramiImage
 	{
+		public InstagramiImage(string Title, BitmapImage ImageData)
+		{
+			this.Title = Title;
+			this.ImageData = ImageData;
+		}
+
 		private string _Title;
 		public string Title
 		{

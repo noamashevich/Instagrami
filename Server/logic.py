@@ -33,10 +33,14 @@ class Logic(object):
 			return self.handle_image_upload(message)
 		elif msg_type == MessageType.REQUEST_MAIN_PAGE:
 			return self.handle_homepage_request(message)
+		elif msg_type == MessageType.IMG_LIKE:
+			return self.handle_img_like(message)
 
 
 	def handle_sign_up(self, message):
 		username, password = message.split(bytearray(', ', encoding='ascii'))
+
+		username = username.decode('ascii')
 
 		if self.server_db.add_user(username, password):
 			logging.info('Added user {} successfully'.format(username))
@@ -47,6 +51,8 @@ class Logic(object):
 
 	def handle_sign_in(self, message):
 		username, password = message.split(bytearray(', ', encoding='ascii'))
+
+		username = username.decode('ascii')
 
 		tryUsername = self.server_db.get_user_by_username(username)
 		if len(tryUsername) != 0:
@@ -86,10 +92,10 @@ class Logic(object):
 			return self.build_header(0, MessageType.INVAL_MSG_FMT)
 
 		username_end = text_start = USERNAME_START + username_size
-		username = message[USERNAME_START:username_end]
+		username = message[USERNAME_START:username_end].decode('ascii')
 
 		text_end = image_start = text_start + text_size
-		text = message[text_start:text_end]
+		text = message[text_start:text_end].decode('ascii')
 
 		image_end = image_start + image_size
 		image = message[image_start:image_end]
@@ -110,9 +116,9 @@ class Logic(object):
 		date_time_str = date + time
 		date_time_str = date_time_str.replace('-', '').replace(':', '').replace('.', '')
 
-		image_hash = sha224(image + text).hexdigest()
+		image_hash = sha224(image + text.encode('ascii')).hexdigest()
 
-		image_path = os.path.join(Logic.IMAGES_DIR, username.decode('ascii'), image_hash + date_time_str)
+		image_path = os.path.join(Logic.IMAGES_DIR, username, image_hash + date_time_str)
 		image_path = os.path.abspath(image_path)
 
 		if not os.path.exists(os.path.dirname(image_path)):
@@ -131,20 +137,28 @@ class Logic(object):
 	def handle_homepage_request(self, message):
 		user_to_ignore, start, amount = message.split(bytearray(', ', encoding='ascii'))
 			
-		images = self.server_db.get_images(user_to_ignore, int(start), int(amount))
-		response = self.build_header(0, MessageType.RESPONSE_MAIN_PAGE)
+		images = self.server_db.get_images(user_to_ignore.decode('ascii'), int(start), int(amount))
+		response = bytes()
 
 		for image in images:
-			img_resp = image[2]
+			img_resp = image[2].encode('ascii')
+			logging.info(f'Home page: {img_resp}, {len(image[2])}')
 
 			with open(image[0], 'rb') as img_file:
 				img_resp += img_file.read()
 
-			img_resp += image[1]
+			img_resp += image[1].encode('ascii')
 
 			response += str(len(image[2])).encode('ascii').rjust(10)
 			response += str(len(img_resp) - len(image[2]) - len(image[1])).encode('ascii').rjust(10)
 			response += str(len(image[1])).encode('ascii').rjust(10)
-			response += img_response
+			response += img_resp
 
-		return response
+
+		header = self.build_header(len(response), MessageType.RESPONSE_MAIN_PAGE)
+
+		return (header + response)
+
+	
+	def handle_img_like(self, message):
+		self.server_db.like_image(message.decode('ascii'))

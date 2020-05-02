@@ -19,3 +19,4 @@ class MessageType(IntEnum):
 	NO_SUCH_USER       = 11
 	IMG_UPLOAD_SUCCESS = 12	
 	IMG_UPLOAD_FAIL    = 13
+	IMG_LIKE	       = 14

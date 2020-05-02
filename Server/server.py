@@ -75,7 +75,7 @@ class Server():
 			header = struct.unpack(HEADER_FMT, header_bytes)
 			message = client.recv(header[0])
 		except Exception as e:
-			logging.warning(f'Client message caused: {e}')
+			logging.exception(f'Client message caused: {e}')
 			return None, None
 
 		return header, message
@@ -90,6 +90,7 @@ class Server():
 		header, message = self.client_recv(client)
 
 		if message is None or header is None:
+			logging.info(f'disconnecting client {client}')
 			self.handle_client_disconnect(client)
 			return
 
@@ -97,7 +98,7 @@ class Server():
 
 		reply = self.server_logic.handle_client_message(header, message)
 
-		logging.info(f'reply: {reply}')
+		logging.debug(f'reply: {reply}')
 
 		self.client_send(client, reply)
 
@@ -131,7 +132,8 @@ class Server():
 				else:
 					try:
 						self.handle_client(sock)
-					except:
+					except Exception as e:
+						logging.exception(f'Client caused exception {e}')
 						self.handle_client_disconnect(sock)
 
 

@@ -54,13 +54,9 @@ namespace WpfApp4
 			this.canvas1.Children.Add(homePage);
 
 			Client client = Client.GetClient();
-			client.RequestHomePage(0, 10);
+			Tuple<string, List<InstagramiImage>> response = client.RequestHomePage(0, 10);
 
-			this.homePage.ImagesList.ItemsSource = new InstagramiImage[]
-			{
-				new InstagramiImage{Title="Image1", ImageData=new BitmapImage(new Uri("C:\\Users\\user\\Pictures\\regex.PNG"))},
-				new InstagramiImage{Title="Image2", ImageData=new BitmapImage(new Uri("C:\\Users\\user\\Pictures\\Capture.PNG"))}
-			};
+			this.homePage.ImagesList.ItemsSource = new List<InstagramiImage>(response.Item2);
 		}
 
 		private void MainPage_goToUploadImg(object sender, RoutedEventArgs e)

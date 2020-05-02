@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace WpfApp4
 {
@@ -128,13 +130,71 @@ namespace WpfApp4
 		}
 
 
-		public string RequestHomePage(int start, int amount)
+		public Tuple<string, List<InstagramiImage>> RequestHomePage(int start, int amount)
 		{
 			string request = this.username + ", " + start.ToString() + ", " + amount.ToString();
 
 			clientSocket.Send(request, MessageType.RequestMainPage);
 
-			return "";
+			Tuple<Header, byte[]> reply = clientSocket.RecieveBytes();
+
+			Header header = reply.Item1;
+			byte[] message = reply.Item2;
+
+			if (header.type != MessageType.ResponseMainPage)
+				return new Tuple<string, List<InstagramiImage>>("Failed to get a response", null);
+
+			List<InstagramiImage> images = new List<InstagramiImage>();
+
+			while (message != null && message.Length > 0)
+			{
+				string sizes = Encoding.ASCII.GetString(message, 0, 30);
+				
+				int usernameSize = int.Parse(sizes.Substring(0, 10));
+				int imageSize = int.Parse(sizes.Substring(10, 10));
+				int textSize = int.Parse(sizes.Substring(20, 10));
+
+				message = message.Skip(30).ToArray();
+
+				string username = Encoding.ASCII.GetString(message, 0, usernameSize);
+				byte[] image = message.Skip(usernameSize).Take(imageSize).ToArray();
+				string text = Encoding.ASCII.GetString(message, usernameSize + imageSize, textSize);
+
+				/*
+				using (System.IO.MemoryStream ms = new System.IO.MemoryStream(image))
+				{
+					BitmapImage imageBitMap = new BitmapImage();
+
+					imageBitMap.BeginInit();
+					imageBitMap.StreamSource = ms;
+					imageBitMap.EndInit();
+
+					images.Add(new InstagramiImage(username + ": " + text, imageBitMap));
+				}
+				*/
+
+				string imagePath = @"C:\Users\user\" + start.ToString() + ".bmp";
+
+				File.WriteAllBytes(imagePath, image);
+
+				BitmapImage bmapImage = new BitmapImage();
+
+				bmapImage.BeginInit();
+				bmapImage.CacheOption = BitmapCacheOption.OnLoad;
+				bmapImage.UriSource = new Uri(imagePath);
+				bmapImage.EndInit();
+
+
+				images.Add(new InstagramiImage(username + ": " + text, bmapImage));
+
+				File.Delete(imagePath);
+
+				message = message.Skip(usernameSize + imageSize + textSize).ToArray();
+
+				start++;
+			}
+
+			return new Tuple<string, List<InstagramiImage>>("Got images from server", images);
 		}
 	}
 }
