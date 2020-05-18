@@ -7,12 +7,23 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Canvas HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800" Background="White">
-            <Button x:Name="chooseImageButton" Content="Choose Image" Height="47" Canvas.Left="173" Canvas.Top="351" Width="190" Click="chooseImageButton_Click"/>
-            <Image x:Name="ImageViewer" Height="300" Canvas.Left="252" Canvas.Top="10" Width="300"/>
-            <Button x:Name="uploadButton" Content="Upload" Canvas.Left="438" Canvas.Top="351" Width="190" Height="47" IsEnabled="False" Click="uploadButton_Click"/>
-            <TextBox x:Name="imageDescription" Height="31" Canvas.Left="252" TextWrapping="Wrap" Canvas.Top="315" Width="300"/>
-            <Label x:Name="resultLabel" Content="" Canvas.Left="325" Canvas.Top="396" RenderTransformOrigin="1.297,0.053" Width="142"/>
+        <Canvas HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800" Background="#FFFAFAFA">
+            <Button x:Name="chooseImageButton" Content="Choose Image" Height="47" Canvas.Left="200" Canvas.Top="367" Width="190" Click="chooseImageButton_Click" Background="#FFCCD5F0"/>
+            <Image x:Name="ImageViewer" Height="251" Canvas.Left="200" Canvas.Top="75" Width="399"/>
+            <Button x:Name="uploadButton" Content="Upload" Canvas.Left="409" Canvas.Top="367" Width="190" Height="47" IsEnabled="False" Click="uploadButton_Click" Background="#FFCCD5F0" RenderTransformOrigin="0.518,1.019"/>
+            <TextBox x:Name="imageDescription" Height="31" Canvas.Left="200" TextWrapping="Wrap" Canvas.Top="331" Width="399"/>
+            <Label x:Name="resultLabel" Content="" Canvas.Left="150" Canvas.Top="179" RenderTransformOrigin="1.297,0.053" Width="479" FontSize="36" Height="62"/>
+            <Image Height="57" Canvas.Left="245" Canvas.Top="17" Width="292"
+                Source="pic/insta.png" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform AngleY="-0.207"/>
+                        <RotateTransform/>
+                        <TranslateTransform Y="-0.496"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
         </Canvas>
 
     </Grid>

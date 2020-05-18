@@ -17,7 +17,7 @@ class ServerDB():
 	CREATE_IMAGES_TABLE = '''CREATE TABLE IF NOT EXISTS images (
 							 image_location TEXT PRIMARY KEY NOT NULL,
 							 image_text TEXT NOT NULL,
-							 username TEXT NOT NULL
+							 username TEXT NOT NULL,
 							 likes INT UNSIGNED NOT NULL)'''
 
 	# Table manipulation
@@ -28,9 +28,14 @@ class ServerDB():
 	ADD_USER = '''INSERT INTO users VALUES ("{}", "{}")'''
 
 	GET_ALL_IMAGES = '''SELECT * FROM images ORDER BY image_location'''
+	GET_ALL_USER_IMAGES = '''SELECT * FROM images WHERE username="{}" ORDER BY image_location'''
 	GET_ALL_IMAGES_EXCEPT = '''SELECT * FROM images WHERE username<>"{}" ORDER BY image_location'''
+	GET_IMAGE = '''SELECT * FROM images WHERE image_location="{}"'''
 
 	ADD_IMAGE = '''INSERT INTO images VALUES ("{}", "{}", "{}", 0)'''
+	UPDATE_IMAGE = '''UPDATE images
+					  SET likes={}
+					  WHERE image_location="{}";'''
 
 	def __init__(self):
 		"""
@@ -97,7 +102,6 @@ class ServerDB():
 
 
 	def get_all_images_except(self, user_to_ignore):
-		logging.info(f'{ServerDB.GET_ALL_IMAGES_EXCEPT.format(user_to_ignore)}')
 		return self.conn.execute(ServerDB.GET_ALL_IMAGES_EXCEPT.format(user_to_ignore)).fetchall()
 
 
@@ -120,13 +124,29 @@ class ServerDB():
 		return images # [start:start+amount]
 
 
-	def update_image(self, image_row):
-		pass
+	def get_user_images(self, user):
+		return self.conn.execute(ServerDB.GET_ALL_USER_IMAGES.format(user)).fetchall()
+
+
+	def update_image_likes(self, image_location, new_likes):
+		self.conn.execute(ServerDB.UPDATE_IMAGE.format(new_likes, image_location))
+
+		self.conn.commit()
+
+
+	def get_image(self, image_location):
+		return self.conn.execute(ServerDB.GET_IMAGE.format(image_location))
 
 
 	def like_image(self, image):
-		image_row = self.get_image(image)
+		image_rows = list(self.get_image(image))
 
-		image_row[3] += 1
+		if len(image_rows) != 1:
+			logging.error(f'image location returned {len(image_rows)} items instead of 1')
+			return
 
-		self.update_image(image_row)
+		image_row = image_rows[0]
+
+		logging.info(f'Amount of likes is now: {image_row[3] + 1}')
+
+		self.update_image_likes(image_row[0], image_row[3] + 1)

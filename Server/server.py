@@ -98,9 +98,10 @@ class Server():
 
 		reply = self.server_logic.handle_client_message(header, message)
 
-		logging.debug(f'reply: {reply}')
+		if reply is not None:
+			logging.debug(f'reply: {reply}')
 
-		self.client_send(client, reply)
+			self.client_send(client, reply)
 
 
 	def handle_client_disconnect(self, client):

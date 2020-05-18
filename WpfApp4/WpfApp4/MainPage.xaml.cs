@@ -21,8 +21,6 @@ namespace WpfApp4
     /// </summary>
     public partial class MainPage : UserControl
     {
-
-
         public event RoutedEventHandler goToSigTUp;
 		public event RoutedEventHandler goToHomePage;
 
@@ -31,21 +29,25 @@ namespace WpfApp4
             InitializeComponent();
         }
 
-        
-
         private void LogInButton_Click(object sender, RoutedEventArgs e)
         {
 			Client client = Client.GetClient();
 
 			SignInStateLabel.Content = client.SignIn(UserName.Text, Password.Password);
+
+            Password.Password = "";
+
+            if (SignInStateLabel.Content == "SignIn was successful")
+            {
+                SignInStateLabel.Content = "";
+                UserName.Text = "";
+                this.goToHomePage(sender, e);
+            }
 		}
 
         private void SingUpButton_Click(object sender, RoutedEventArgs e)
         {
-           // if (goToSigTUp != null)
-            {
-                goToSigTUp(this, new RoutedEventArgs());
-            }
+            goToSigTUp(this, new RoutedEventArgs());
         }
 
 		private void HomePageButton_Click(object sender, RoutedEventArgs e)

@@ -9,10 +9,12 @@ namespace WpfApp4
 {
 	public class InstagramiImage
 	{
-		public InstagramiImage(string Title, BitmapImage ImageData)
+		public InstagramiImage(string Title, BitmapImage ImageData, string imageID, string likes)
 		{
 			this.Title = Title;
 			this.ImageData = ImageData;
+			this.ImageID = imageID;
+			this.Likes = likes;
 		}
 
 		private string _Title;
@@ -27,6 +29,20 @@ namespace WpfApp4
 		{
 			get { return this._ImageData; }
 			set { this._ImageData = value; }
+		}
+
+		private string imageID;
+		public string ImageID
+		{
+			get { return this.imageID; }
+			set { this.imageID = value; }
+		}
+
+		private string likes;
+		public string Likes
+		{
+			get { return this.likes; }
+			set { this.likes = value; }
 		}
 	}
 }

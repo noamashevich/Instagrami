@@ -33,6 +33,8 @@ class Logic(object):
 			return self.handle_image_upload(message)
 		elif msg_type == MessageType.REQUEST_MAIN_PAGE:
 			return self.handle_homepage_request(message)
+		elif msg_type == MessageType.REQUEST_PROFILE:
+			return self.handle_profile_request(message)
 		elif msg_type == MessageType.IMG_LIKE:
 			return self.handle_img_like(message)
 
@@ -134,10 +136,7 @@ class Logic(object):
 		return self.build_header(0, MessageType.IMG_UPLOAD_SUCCESS)
 
 
-	def handle_homepage_request(self, message):
-		user_to_ignore, start, amount = message.split(bytearray(', ', encoding='ascii'))
-			
-		images = self.server_db.get_images(user_to_ignore.decode('ascii'), int(start), int(amount))
+	def create_images_repsonse(self, images):
 		response = bytes()
 
 		for image in images:
@@ -148,17 +147,43 @@ class Logic(object):
 				img_resp += img_file.read()
 
 			img_resp += image[1].encode('ascii')
+			img_resp += image[0].encode('ascii')
+			img_resp += str(image[3]).encode('ascii')
 
 			response += str(len(image[2])).encode('ascii').rjust(10)
-			response += str(len(img_resp) - len(image[2]) - len(image[1])).encode('ascii').rjust(10)
+			response += str(len(img_resp) - sum([len(str(x)) for x in image])).encode('ascii').rjust(10)
 			response += str(len(image[1])).encode('ascii').rjust(10)
+			response += str(len(image[0])).encode('ascii').rjust(10)
+			response += str(len(str(image[3]))).encode('ascii').rjust(10)
+
 			response += img_resp
 
+		return response
+	
+	def handle_homepage_request(self, message):
+		user_to_ignore, start, amount = message.split(bytearray(', ', encoding='ascii'))
+			
+		images = self.server_db.get_images(user_to_ignore.decode('ascii'), int(start), int(amount))
+		
+		response = self.create_images_repsonse(images)
 
 		header = self.build_header(len(response), MessageType.RESPONSE_MAIN_PAGE)
 
 		return (header + response)
-
 	
+
+	def handle_profile_request(self, message):
+		user_profile, start, amount = message.split(bytearray(', ', encoding='ascii'))
+			
+		images = self.server_db.get_user_images(user_profile.decode('ascii'))
+		
+		response = self.create_images_repsonse(images)
+
+		header = self.build_header(len(response), MessageType.RESPONSE_PROFILE)
+
+		return (header + response)
+
+
 	def handle_img_like(self, message):
+		logging.info(f'Image {message} liked!')
 		self.server_db.like_image(message.decode('ascii'))

@@ -20,3 +20,5 @@ class MessageType(IntEnum):
 	IMG_UPLOAD_SUCCESS = 12	
 	IMG_UPLOAD_FAIL    = 13
 	IMG_LIKE	       = 14
+	REQUEST_PROFILE    = 15
+	RESPONSE_PROFILE   = 16

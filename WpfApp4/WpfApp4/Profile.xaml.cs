@@ -16,15 +16,15 @@ using System.Windows.Shapes;
 namespace WpfApp4
 {
 	/// <summary>
-	/// Interaction logic for HomePage.xaml
+	/// Interaction logic for Profile.xaml
 	/// </summary>
-	public partial class HomePage : UserControl
+	public partial class Profile : UserControl
 	{
 		public event RoutedEventHandler goToUploadImg;
-		public event RoutedEventHandler goToProfilePage;
 		public event RoutedEventHandler goToMainPage;
+		public event RoutedEventHandler goToHomePage;
 
-		public HomePage()
+		public Profile()
 		{
 			InitializeComponent();
 		}
@@ -46,17 +46,9 @@ namespace WpfApp4
 			this.goToMainPage(sender, e);
 		}
 
-		private void ProFilePageButtom_Click(object sender, RoutedEventArgs e)
+		private void HomePageButton_Click(object sender, RoutedEventArgs e)
 		{
-			this.goToProfilePage(sender, e);
-		}
-
-		private void likeButton_Click(object sender, RoutedEventArgs e)
-		{
-			Client client = Client.GetClient();
-
-			// Cast sender to button and get the Tag (which is the image id).
-			client.LikeImage((string)((Button)(sender)).Tag);
+			this.goToHomePage(sender, e);
 		}
 	}
 }

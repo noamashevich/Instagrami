@@ -25,7 +25,9 @@ namespace WpfApp4
 		NoSuchUser,
 		ImgUploadSuccess,
 		ImgUploadFail,
-		ImgLike
+		ImgLike,
+		ProfileRequest,
+		ProfileResponse,
 	}
 	public class SynchronousSocketClient
 	{
@@ -38,7 +40,7 @@ namespace WpfApp4
 
 			// Connect the socket to the remote endpoint. Catch any errors.  
 			this.sender.Connect(serverAddress);
-
+				
 			Console.WriteLine("Socket connected to {0}",
 							  this.sender.RemoteEndPoint.ToString());
 		}
@@ -93,8 +95,22 @@ namespace WpfApp4
 
 			if (header.length > 0)
 			{
+				bytesRec = 0;
+				int totalBytes = 0;
+
 				msgBytes = new byte[header.length];
-				bytesRec = sender.Receive(msgBytes);
+
+				// This do-while loop is used to make sure we get exactly the amount of bytes we are expecting, no more no less
+				// TCP sockets do not know where packets send start and end (they are a stream) and so we have to make sure it happens correctly.
+				do
+				{
+					byte[] tempBytes = new byte[header.length - totalBytes];
+					bytesRec = sender.Receive(tempBytes);
+
+					tempBytes.CopyTo(msgBytes, totalBytes);
+					totalBytes += bytesRec;
+				}
+				while (totalBytes < header.length);
 			}
 
 			return Tuple.Create(header, msgBytes);
